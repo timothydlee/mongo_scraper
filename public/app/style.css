@@ -1,0 +1,20 @@
+.navbar {
+	background: white;
+}
+
+body {
+	background-image: url(https://source.unsplash.com/Oaqk7qqNh_c/1500x1500);
+	background-size: 100%;
+}
+
+.jumbotron {
+	margin: 5% 10%;
+}
+
+#id-button {
+	margin-top: 10px;
+}
+
+.hidden {
+	display: none;
+}
