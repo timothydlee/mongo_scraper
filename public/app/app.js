@@ -15,14 +15,60 @@ $("#home-button").on('click', function() {
 	savedJumbo.classList.add('hidden');
 });
 
-$.getJSON('/articles', (data) => {
-	data.map((article) => {
-		let { title, img, link, desc } = article;
+// //Grabbing articles from MongoDB BSON as JSON
+// $.getJSON('/articles', (data) => {
+// 	//Response data array is mapped
+// 	data.map((article) => {
+// 		//Assigning article.title, article.img...
+// 		let { title, img, link, desc } = article;
 		
-		$("#articles").append(`<h2>${title}</h2> <p>${img}</p> <p>${desc}</p> <a target='_blank' href='http://${link}'>Link to the article</a><br><br>`)
-		$('#articles').append('<button>Click To Save Article!');
+// 		//Appending each article to the DOM
+// 		$("#articles").append(`<h2>${title}</h2> 
+// 			<p>${img}</p> 
+// 			<p>${desc}</p> 
+// 			<button type='button' class='btn btn-primary' id="article_link"><a target='_blank' href='http://${link}'>Link to the article</a></button>
+// 			<button type="button" class="btn btn-success">Click to Save Article</button>
+// 			<br><br>`)
+// 		//Dynamically generate Save Article buttons
+// 		// $('#articles').append('<button>Click To Save Article!');
+// 	});
+// });
+
+
+// $(document).on('click', '#scrape-button', () => {
+// 	fetch('/scrape')
+// 		.then(blob => blob.json())
+// 		.then(data => console.log(data));
+// });
+
+$(document).on("click", "#scrape-button", () => {
+	
+	$.get({ url: '/scrape'}).done(function(data) {
+		console.log(data.length);
+		$("#scraped-modal-text").html(`<h3>${data.length}</h3>`)
+	});
+	//Grabbing articles from MongoDB BSON as JSON
+	$.getJSON('/articles', (data) => {
+		$("#scraped-modal-text").html("<h3>" + data.length + "</h3>")
+
+		//Response data array is mapped
+		data.map((article) => {
+			//Assigning article.title, article.img...
+			let { title, img, link, desc } = article;
+			
+			//Appending each article to the DOM
+			$("#articles").append(`<h2>${title}</h2> 
+				<p>${img}</p> 
+				<p>${desc}</p> 
+				<button type='button' class='btn btn-primary' id="article_link"><a target='_blank' href='http://${link}'>Link to the article</a></button>
+				<button type="button" class="btn btn-success">Click to Save Article</button>
+				<br><br>`);
+				
+		});
 	});
 });
+
+
 
 // // Grab the articles as a json
 // $.getJSON("/articles", function(data) {

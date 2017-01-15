@@ -18,3 +18,7 @@ body {
 .hidden {
 	display: none;
 }
+
+#article_link a{
+	color: white;
+}
