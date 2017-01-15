@@ -20,9 +20,7 @@ var app = express();
 
 // Use morgan and body parser with our app
 app.use(logger("dev"));
-app.use(bodyParser.urlencoded({
-	extended: false
-}));
+app.use(bodyParser.urlencoded({ extended: false }));
 
 // Make public a static dir
 app.use(express.static("public"));
@@ -32,14 +30,10 @@ mongoose.connect("mongodb://localhost/mongoscraperhw");
 var db = mongoose.connection;
 
 // Show any mongoose errors
-db.on("error", function(error) {
-	console.log("Mongoose Error: ", error);
-});
+db.on("error", (error) =>	console.log("Mongoose Error: ", error));
 
 // Once logged in to the db through mongoose, log a success message
-db.once("open", function() {
-	console.log("Mongoose connection successful.");
-});
+db.once("open", () => console.log("Mongoose connection successful."));
 
 
 // Routes
@@ -61,8 +55,8 @@ app.get('/scrape', function(req, res){
 			//Create object that will hold scraped data
 			let result = {};
 			//Finding the image, link, title, and description of each article
-			result.image 	= $(this).find('.image').children('noscript').html();
-			result.link		= $(this).children('a').attr('href');
+			result.img 		= $(this).find('.image').children('noscript').html();
+			result.link		= "www.theonion.com"+$(this).children('a').attr('href');
 			result.title 	= $(this).find('.headline').children('a').attr('title');
 			result.desc 	= $(this).find('.desc').text();
 			// console.log(`${result.image}`);
@@ -86,40 +80,33 @@ app.get('/articles', (req, res) => {
 	Article.find({}, (err, doc) => (err) ? console.log(err) : res.json(doc));
 })
 
-// // This will get the articles we scraped from the mongoDB
-// app.get("/articles", function(req, res) {
-//   // Grab every doc in the Articles array
-//   Article.find({}, function(error, doc) {
-//     // Log any errors
-//     if (error) {
-//       console.log(error);
-//     }
-//     // Or send the doc to the browser as a json object
-//     else {
-//       res.json(doc);
-//     }
-//   });
-// });
+//Searching for an article by its ID
+app.get('/articles/:id', (req, res) => {
+	//Using ID passed in the :id parameter, setting up a query that finds the matching one in the db
+	Article.findOne({ '_id': req.params.id })
 
-// // Grab an article by it's ObjectId
-// app.get("/articles/:id", function(req, res) {
-//   // Using the id passed in the id parameter, prepare a query that finds the matching one in our db...
-//   Article.findOne({ "_id": req.params.id })
-//   // ..and populate all of the notes associated with it
-//   .populate("note")
-//   // now, execute our query
-//   .exec(function(error, doc) {
-//     // Log any errors
-//     if (error) {
-//       console.log(error);
-//     }
-//     // Otherwise, send the doc to the browser as a json object
-//     else {
-//       res.json(doc);
-//     }
-//   });
-// });
+	//Populate all of the notes associated with it
+	.populate('note')
 
+	//Execute the query, console logging error if any, else send doc to browser as JSON
+	.exec((err, doc) => (err) ? console.log(err) : res.json(doc));
+})
+
+//Create a new note or replace an existing note
+app.post('/articles/:id', (req, res) => {
+	//Create new instance of Note, pass req.body into entry
+	let newNote = new Note(req.body);
+
+	//Save new note to mongo
+	newNote.save((err, doc) => {
+		//Logs any errors
+		if (err) throw err;
+		//Otherwise, uses article's id to search db for the same id to update the note
+		Article.findOneAndUpdate({ '_id': req.params.id }, { 'note': doc._id })
+		//Executes query, logs err if any, otherwise sends doc to browser
+		.exec((err, doc) => (err) ? console.log(err) : res.send(doc));
+	});
+});
 
 // // Create a new note or replace an existing note
 // app.post("/articles/:id", function(req, res) {
@@ -153,6 +140,4 @@ app.get('/articles', (req, res) => {
 
 
 // Listen on port 3000
-app.listen(process.env.PORT || 3000, function() {
-	console.log("App running on port 3000!");
-});
+app.listen(process.env.PORT || 3000, () => console.log('App running on port 3000!'));
