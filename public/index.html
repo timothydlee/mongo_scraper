@@ -39,18 +39,16 @@
 			<h1 class="display-3">Mongo Scraper</h1>
 			<p class="lead">The Onion Edition</p>
 		</div>
-		<div class="row" id="no-articles">
-			<div class="col-md-12">
-				<div class="container mx-auto"> Looks like you don't have any articles yet! Go scrape some!
-				</div>
-			</div>
-		</div>
 	</div>
 	<!-- End of Home Jumbotron -->
+
+	<!-- Start of row that contains all Scraoed Artuckes -->
 	<div class="input-group">
 		<div id="articles">
 		</div>
 	</div>
+	<!-- End of Scraped Articles -->
+
 	<!-- Saved Articles Jumbotron -->
 	<div class="jumbotron saved-articles-jumbotron hidden">
 		<div class="container mx-auto">
@@ -59,18 +57,49 @@
 		</div>
 	</div>	
 	<!-- End of Saved Articles Jumbotron -->
-	
 
+	<!-- Start of row that contains all Scraoed Artuckes -->
+	<div class="input-group">
+		<div id="savedarticles">
+		</div>
+	</div>
+	<!-- End of Scraped Articles -->
+	
+	<!-- Modal that tells you that you've successfully scraped -->
 	<div class="modal fade" id="scraped-modal">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 				<div class="modal-body" id="scraped-modal-text">
-					<h3>You've scraped # articles!</h3>
 				</div>
 				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
 			</div>
 		</div>
 	</div>
+	<!-- End of successful scraped modal -->
+
+	<!-- Modal that tells you that you've successfully saved an article -->
+	<div class="modal fade" id="saved-articles-modal">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-body" id="saved-articles-modal-text">
+				</div>
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+	<!-- End of successful article save -->
+
+	<!-- Modal that tells you that you've successfully unsaved an article -->
+	<div class="modal fade" id="unsave-articles-modal">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-body" id="unsaved-articles-modal-text">
+				</div>
+				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+	<!-- End of successful article unsave -->
 
 
 

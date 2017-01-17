@@ -9,14 +9,15 @@ var Article     = require("./models/Article.js");
 // Our scraping tools
 var request 		= require("request");
 var cheerio 		= require("cheerio");
+
 // Mongoose mpromise deprecated - use bluebird promises
 var Promise 		= require("bluebird");
-
 mongoose.Promise = Promise;
-
 
 // Initialize Express
 var app = express();
+
+
 
 // Use morgan and body parser with our app
 app.use(logger("dev"));
@@ -91,6 +92,26 @@ app.get('/articles/:id', (req, res) => {
 	//Execute the query, console logging error if any, else send doc to browser as JSON
 	.exec((err, doc) => (err) ? console.log(err) : res.json(doc));
 })
+
+//Retreiving articles that we scraped from MongoDB
+app.get('/saved', (req, res) => {
+	//Finds articles where saved is true
+	Article.find({ 'saved' : true }, (err, doc) => (err) ? console.log(err) : res.json(doc));
+});
+
+//Setting route to update an article to saved = true if user clicks "save article"
+app.post('/saved/:id', (req, res) => {
+	Article.update({ '_id' : req.params.id }, { $set : { 'saved' : true }}, (err, res) => 
+		//Console.logs error if any, otherwise console.logs res
+		(err) ? console.log(err) : console.log(res));
+})
+
+//Unsaves article
+app.post('/unsaved/:id', (req, res) => {
+	Article.update( { '_id' : req.params.id }, { $set : { 'saved' : false }}, (err, res) => 
+		(err) ? console.log(err) : console.log(res))
+})
+
 
 //Create a new note or replace an existing note
 app.post('/articles/:id', (req, res) => {

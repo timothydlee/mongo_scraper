@@ -1,3 +1,5 @@
+// =============================Toggling between showing and hiding Home and Saved Articles====================================
+
 function showSavedArticles() {
 	let homeJumbo = document.querySelector('.home-jumbotron');
 	let savedJumbo = document.querySelector('.saved-articles-jumbotron');
@@ -5,93 +7,104 @@ function showSavedArticles() {
 	homeJumbo.classList.add('hidden');
 	homeArticles.classList.add('hidden');
 	savedJumbo.classList.remove('hidden');
+	$("#articles").empty();
+	$.getJSON('/saved', (data) => {
+		data.map((savedarticle) => {
+			//Assigning article.title, article.img...
+			let { title, img, link, desc, _id } = savedarticle;
+			console.log(savedarticle.title)
+			
+			//Appending each article and 3 buttons to the DOM
+			$("#savedarticles").append(`
+				<div class="panel article">
+					<h2>${title}</h2> 
+					<p>${img}</p> 
+					<p>${desc}</p> 
+					<button type='button' class='btn btn-primary' id="article_link"><a target='_blank' href='http://${link}'>Read More</a></button>
+					<button type="submit" class="btn btn-success unsave-article" data-id="${_id}" data-toggle="modal" data-target="#unsave-articles-modal">Click to Unsave Article</button>
+					<button type="button" class="btn btn-secondary comment" data-id="${_id}">Comment</button>
+				</div>
+				<br><br>`);
+		});
+	})
 };
 
 let articlesButton = document.querySelector('.saved-articles-button');
 articlesButton.addEventListener('click', showSavedArticles);
 
-$("#home-button").on('click', function() {
+function showHome() {
 	let homeJumbo = document.querySelector('.home-jumbotron');
 	let savedJumbo = document.querySelector('.saved-articles-jumbotron');
 	let homeArticles = document.getElementById('articles');
 	homeJumbo.classList.remove('hidden');
-	savedJumbo.classList.add('hidden');
 	homeArticles.classList.remove('hidden');
-});
+	savedJumbo.classList.add('hidden');
+};
 
-// //Grabbing articles from MongoDB BSON as JSON
-// $.getJSON('/articles', (data) => {
-// 	//Response data array is mapped
-// 	data.map((article) => {
-// 		//Assigning article.title, article.img...
-// 		let { title, img, link, desc } = article;
-		
-// 		//Appending each article to the DOM
-// 		$("#articles").append(`<h2>${title}</h2> 
-// 			<p>${img}</p> 
-// 			<p>${desc}</p> 
-// 			<button type='button' class='btn btn-primary' id="article_link"><a target='_blank' href='http://${link}'>Link to the article</a></button>
-// 			<button type="button" class="btn btn-success">Click to Save Article</button>
-// 			<br><br>`)
-// 		//Dynamically generate Save Article buttons
-// 		// $('#articles').append('<button>Click To Save Article!');
-// 	});
-// });
+const homeButton = document.querySelector("#home-button");
+homeButton.addEventListener('click', showHome);
+
+// =================================================================================================================================================
 
 
-// $(document).on('click', '#scrape-button', () => {
-// 	fetch('/scrape')
-// 		.then(blob => blob.json())
-// 		.then(data => console.log(data));
-// });
-
-const noArticles = document.getElementById('articles');
-
-
-(noArticles) ? $("#no-articles").addClass('hidden') : $("#no-articles").removeClass('hidden');
+// ==================================== Scraping Articles ================================================================
 
 $(document).on("click", "#scrape-button", () => {
-	
-	$.get({ url: '/scrape'}).done(function(data) {
-		console.log(data.length);
-		$("#scraped-modal-text").html(`<h3>You've scraped ${data.length} articles</h3>`)
-	});
+	$("#articles").empty();
 	//Grabbing articles from MongoDB BSON as JSON
 	$.getJSON('/articles', (data) => {
-		$("#scraped-modal-text").html("<h3>" + data.length + "</h3>")
+		$("#scraped-modal-text").html(`<h3>You've scraped ${data.length} total articles</h3>`);
 
 		//Response data array is mapped
 		data.map((article) => {
 			//Assigning article.title, article.img...
-			let { title, img, link, desc } = article;
+			let { title, img, link, desc, _id } = article;
 			
-			//Appending each article to the DOM
+			//Appending each article and 3 buttons to the DOM
 			$("#articles").append(`
 				<div class="panel article">
 					<h2>${title}</h2> 
 					<p>${img}</p> 
 					<p>${desc}</p> 
-					<button type='button' class='btn btn-primary' id="article_link"><a target='_blank' href='http://${link}'>Link to the article</a></button>
-					<button type="button" class="btn btn-success savearticle">Click to Save Article</button>
-					<button type="button" class="btn btn-secondary">Comment</button>
+					<button type='button' class='btn btn-primary' id="article_link"><a target='_blank' href='http://${link}'>Read More</a></button>
+					<button type="submit" class="btn btn-success save-article" data-id="${_id}" data-toggle="modal" data-target="#saved-articles-modal">Click to Save Article</button>
+					<button type="button" class="btn btn-secondary comment" data-id="${_id}">Comment</button>
 				</div>
 				<br><br>`);
-				
 		});
 	});
+	//Runs showHome function, in the event that someone clicks Scrape button but is looking at their Saved Articles.
+	showHome();
 });
 
+// =================================================================================================================================================
 
 
-// // Grab the articles as a json
-// $.getJSON("/articles", function(data) {
-//   // For each one
-//   for (var i = 0; i < data.length; i++) {
-//     // Display the apropos information on the page
-//     $("#articles").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<br />" + data[i].link + "</p>");
-//   }
-// });
+// ================================Saving Articles===============================================================================
+$(document).on('click', '.save-article', function() {
+	const thisId = $(this).attr('data-id');
+	// console.log(thisId);
+	$.post(`/saved/${thisId}`).done((data) => {
+		console.log(data);
+	});
 
+	$("#saved-articles-modal-text").html("<h3>Article successfully saved!<h3>");
+});
+// =================================================================================================================================================
+
+
+// ================================Unsaving Articles===============================================================================
+$(document).on('click', '.unsave-article', function() {
+	$("#savedarticles").empty();
+	const thisId = $(this).attr('data-id');
+	$.post(`/unsaved/${thisId}`).done((data) => {
+		console.log(data);
+	});
+
+	$("#unsaved-articles-modal-text").html("<h3>Article successfully unsaved!<h3>");
+	showSavedArticles();
+});
+// =================================================================================================================================================
 
 // Whenever someone clicks a p tag
 $(document).on("click", "p", function() {
