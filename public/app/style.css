@@ -2,13 +2,14 @@
 	background: white;
 }
 
-body {
+/*body {
 	background-image: url(https://source.unsplash.com/Oaqk7qqNh_c/1500x1500);
 	background-size: 100%;
-}
+}*/
 
 .jumbotron {
-	margin: 5% 10%;
+	margin: 5% 25%;
+	width: 50%;
 }
 
 #id-button {
@@ -21,4 +22,12 @@ body {
 
 #article_link a{
 	color: white;
+}
+
+.article {
+	width: 50%;
+}
+
+.input-group {
+	margin-left: 25%;
 }

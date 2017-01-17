@@ -12,7 +12,7 @@
 </head>
 <body>
 	<!-- Navbar -->
-	<nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+	<nav class="navbar navbar-toggleable-md fixed-top navbar-light bg-faded">
 		<!-- Hamburger button that only shows on mobile breakpoints -->
 		<button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
@@ -39,17 +39,18 @@
 			<h1 class="display-3">Mongo Scraper</h1>
 			<p class="lead">The Onion Edition</p>
 		</div>
-		<div class="row">
+		<div class="row" id="no-articles">
 			<div class="col-md-12">
-				<div class="container mx-auto" id="no-articles"> Looks like you don't have any articles yet! Go scrape some!
-				</div>
-				<div id="articles">
+				<div class="container mx-auto"> Looks like you don't have any articles yet! Go scrape some!
 				</div>
 			</div>
 		</div>
 	</div>
 	<!-- End of Home Jumbotron -->
-
+	<div class="input-group">
+		<div id="articles">
+		</div>
+	</div>
 	<!-- Saved Articles Jumbotron -->
 	<div class="jumbotron saved-articles-jumbotron hidden">
 		<div class="container mx-auto">
@@ -63,7 +64,7 @@
 	<div class="modal fade" id="scraped-modal">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
-				<div class="modal-body">
+				<div class="modal-body" id="scraped-modal-text">
 					<h3>You've scraped # articles!</h3>
 				</div>
 				<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

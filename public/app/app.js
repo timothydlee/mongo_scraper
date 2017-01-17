@@ -1,7 +1,9 @@
 function showSavedArticles() {
 	let homeJumbo = document.querySelector('.home-jumbotron');
 	let savedJumbo = document.querySelector('.saved-articles-jumbotron');
+	let homeArticles = document.getElementById('articles');
 	homeJumbo.classList.add('hidden');
+	homeArticles.classList.add('hidden');
 	savedJumbo.classList.remove('hidden');
 };
 
@@ -11,8 +13,10 @@ articlesButton.addEventListener('click', showSavedArticles);
 $("#home-button").on('click', function() {
 	let homeJumbo = document.querySelector('.home-jumbotron');
 	let savedJumbo = document.querySelector('.saved-articles-jumbotron');
+	let homeArticles = document.getElementById('articles');
 	homeJumbo.classList.remove('hidden');
 	savedJumbo.classList.add('hidden');
+	homeArticles.classList.remove('hidden');
 });
 
 // //Grabbing articles from MongoDB BSON as JSON
@@ -41,11 +45,16 @@ $("#home-button").on('click', function() {
 // 		.then(data => console.log(data));
 // });
 
+const noArticles = document.getElementById('articles');
+
+
+(noArticles) ? $("#no-articles").addClass('hidden') : $("#no-articles").removeClass('hidden');
+
 $(document).on("click", "#scrape-button", () => {
 	
 	$.get({ url: '/scrape'}).done(function(data) {
 		console.log(data.length);
-		$("#scraped-modal-text").html(`<h3>${data.length}</h3>`)
+		$("#scraped-modal-text").html(`<h3>You've scraped ${data.length} articles</h3>`)
 	});
 	//Grabbing articles from MongoDB BSON as JSON
 	$.getJSON('/articles', (data) => {
@@ -57,11 +66,15 @@ $(document).on("click", "#scrape-button", () => {
 			let { title, img, link, desc } = article;
 			
 			//Appending each article to the DOM
-			$("#articles").append(`<h2>${title}</h2> 
-				<p>${img}</p> 
-				<p>${desc}</p> 
-				<button type='button' class='btn btn-primary' id="article_link"><a target='_blank' href='http://${link}'>Link to the article</a></button>
-				<button type="button" class="btn btn-success">Click to Save Article</button>
+			$("#articles").append(`
+				<div class="panel article">
+					<h2>${title}</h2> 
+					<p>${img}</p> 
+					<p>${desc}</p> 
+					<button type='button' class='btn btn-primary' id="article_link"><a target='_blank' href='http://${link}'>Link to the article</a></button>
+					<button type="button" class="btn btn-success savearticle">Click to Save Article</button>
+					<button type="button" class="btn btn-secondary">Comment</button>
+				</div>
 				<br><br>`);
 				
 		});
@@ -143,3 +156,6 @@ $(document).on("click", "#savenote", function() {
 	$("#bodyinput").val("");
 });
 
+$(document).on('click', '.savearticle', function() {
+
+});
