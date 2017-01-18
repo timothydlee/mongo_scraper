@@ -1,4 +1,4 @@
-// =============================Toggling between showing and hiding Home and Saved Articles====================================
+// =============================Toggling between showing and hiding Home and Saved Articles, displaying appropriately====================================
 
 function showSavedArticles() {
 	let homeJumbo = document.querySelector('.home-jumbotron');
@@ -8,6 +8,7 @@ function showSavedArticles() {
 	homeArticles.classList.add('hidden');
 	savedJumbo.classList.remove('hidden');
 	$("#articles").empty();
+	$("#savedarticles").empty();
 	$.getJSON('/saved', (data) => {
 		data.map((savedarticle) => {
 			//Assigning article.title, article.img...
@@ -33,12 +34,14 @@ let articlesButton = document.querySelector('.saved-articles-button');
 articlesButton.addEventListener('click', showSavedArticles);
 
 function showHome() {
+	$("#savedarticles").empty();
 	let homeJumbo = document.querySelector('.home-jumbotron');
 	let savedJumbo = document.querySelector('.saved-articles-jumbotron');
 	let homeArticles = document.getElementById('articles');
 	homeJumbo.classList.remove('hidden');
 	homeArticles.classList.remove('hidden');
 	savedJumbo.classList.add('hidden');
+	appendScrapedArticles();
 };
 
 const homeButton = document.querySelector("#home-button");
@@ -46,15 +49,9 @@ homeButton.addEventListener('click', showHome);
 
 // =================================================================================================================================================
 
-
-// ==================================== Scraping Articles ================================================================
-
-$(document).on("click", "#scrape-button", () => {
-	$("#articles").empty();
-	//Grabbing articles from MongoDB BSON as JSON
+// =============================Function that appends scraped articles====================================
+function appendScrapedArticles() {
 	$.getJSON('/articles', (data) => {
-		$("#scraped-modal-text").html(`<h3>You've scraped ${data.length} total articles</h3>`);
-
 		//Response data array is mapped
 		data.map((article) => {
 			//Assigning article.title, article.img...
@@ -68,12 +65,24 @@ $(document).on("click", "#scrape-button", () => {
 					<p>${desc}</p> 
 					<button type='button' class='btn btn-primary' id="article_link"><a target='_blank' href='http://${link}'>Read More</a></button>
 					<button type="submit" class="btn btn-success save-article" data-id="${_id}" data-toggle="modal" data-target="#saved-articles-modal">Click to Save Article</button>
-					<button type="button" class="btn btn-secondary comment" data-id="${_id}">Comment</button>
+					<button type="button" class="btn btn-secondary comment" data-id="${_id}" data-toggle="modal" data-target="#comment-modal">Comment</button>
 				</div>
 				<br><br>`);
 		});
 	});
-	//Runs showHome function, in the event that someone clicks Scrape button but is looking at their Saved Articles.
+}
+// =================================================================================================================================================
+
+
+// ==================================== Scrape Articles Button ================================================================
+
+$(document).on("click", "#scrape-button", () => {
+	$("#articles").empty();
+	//Grabbing articles from MongoDB BSON as JSON
+	$.getJSON('/articles', (data) => {
+		$("#scraped-modal-text").html(`<h3>You've scraped ${data.length} total articles</h3>`);
+	});
+	//Runs showHome function to display all articles.
 	showHome();
 });
 
@@ -105,6 +114,100 @@ $(document).on('click', '.unsave-article', function() {
 	showSavedArticles();
 });
 // =================================================================================================================================================
+
+
+//Getting the comment modal to pop up and generate a comment form
+$(document).on('click', '.comment', function() {
+	let thisId = $(this).attr('data-id');
+	generateCommentForm(thisId);
+});
+
+function generateCommentForm(id) {
+	$.get(`/articles/${id}`)
+	.done((data) => {
+		console.log(data);
+		if (data.note) {
+			$('.previous_comments').empty();
+			$('.previous_comments').append(data.note.title);
+		};
+		$("#comment-form").html(`
+			<form id="comment-form">	
+				<div class="form-group">
+					<label for="title">Title</label>
+					<input type="text" class="form-control" id="comment_title">
+					<label for="comment">Comment</label>
+					<textarea type="text" class="form-control input-large search-query" id="comment_comment"></textarea>
+				</div>
+			</form>
+			<button type="button" class="btn btn-secondary" data-dismiss="modal" data-id="${id}"" id="savenote">Submit</button>
+			<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+		`)
+	});
+};
+
+
+$(document).on('click', '#savenote', function() {
+	let thisId = $(this).attr('data-id');
+	$.post(`/articles/${thisId}`, {
+		title: $("#comment_title").val(),
+		body: $("#comment_comment").val()
+	}).done((data) => {
+		console.log("success");
+	})
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// // When you click the savenote button
+// $(document).on("click", "#savenote", function() {
+// 	// Grab the id associated with the article from the submit button
+// 	var thisId = $(this).attr("data-id");
+
+// 	// Run a POST request to change the note, using what's entered in the inputs
+// 	$.ajax({
+// 		method: "POST",
+// 		url: "/articles/" + thisId,
+// 		data: {
+// 			// Value taken from title input
+// 			title: $("#titleinput").val(),
+// 			// Value taken from note textarea
+// 			body: $("#bodyinput").val()
+// 		}
+// 	})
+// 		// With that done
+// 		.done(function(data) {
+// 			// Log the response
+// 			console.log(data);
+// 			// Empty the notes section
+// 			$("#notes").empty();
+// 		});
+
+// 	// Also, remove the values entered in the input and textarea for note entry
+// 	$("#titleinput").val("");
+// 	$("#bodyinput").val("");
+// });
+
+
+
+
+
+
+
+
+
 
 // Whenever someone clicks a p tag
 $(document).on("click", "p", function() {
@@ -138,37 +241,4 @@ $(document).on("click", "p", function() {
 				$("#bodyinput").val(data.note.body);
 			}
 		});
-});
-
-// When you click the savenote button
-$(document).on("click", "#savenote", function() {
-	// Grab the id associated with the article from the submit button
-	var thisId = $(this).attr("data-id");
-
-	// Run a POST request to change the note, using what's entered in the inputs
-	$.ajax({
-		method: "POST",
-		url: "/articles/" + thisId,
-		data: {
-			// Value taken from title input
-			title: $("#titleinput").val(),
-			// Value taken from note textarea
-			body: $("#bodyinput").val()
-		}
-	})
-		// With that done
-		.done(function(data) {
-			// Log the response
-			console.log(data);
-			// Empty the notes section
-			$("#notes").empty();
-		});
-
-	// Also, remove the values entered in the input and textarea for note entry
-	$("#titleinput").val("");
-	$("#bodyinput").val("");
-});
-
-$(document).on('click', '.savearticle', function() {
-
 });

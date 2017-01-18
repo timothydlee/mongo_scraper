@@ -27,7 +27,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static("public"));
 
 // Database configuration with mongoose
-mongoose.connect("mongodb://localhost/mongoscraperhw");
+// mongoose.connect("mongodb://localhost/mongoscraperhw");
+mongoose.connect('mongodb://heroku_wz6l96kq:ubnrroqm6j2ucpgvekid0lp7ej@ds117829.mlab.com:17829/heroku_wz6l96kq');
 var db = mongoose.connection;
 
 // Show any mongoose errors
@@ -112,7 +113,6 @@ app.post('/unsaved/:id', (req, res) => {
 		(err) ? console.log(err) : console.log(res))
 })
 
-
 //Create a new note or replace an existing note
 app.post('/articles/:id', (req, res) => {
 	//Create new instance of Note, pass req.body into entry
@@ -123,9 +123,12 @@ app.post('/articles/:id', (req, res) => {
 		//Logs any errors
 		if (err) throw err;
 		//Otherwise, uses article's id to search db for the same id to update the note
-		Article.findOneAndUpdate({ '_id': req.params.id }, { 'note': doc._id })
-		//Executes query, logs err if any, otherwise sends doc to browser
-		.exec((err, doc) => (err) ? console.log(err) : res.send(doc));
+		Article.findOneAndUpdate(
+			{ '_id': req.params.id }, 
+			{ $push: {'note' : doc._id } 
+		})
+			//Executes query, logs err if any, otherwise sends doc to browser
+			.exec((err, doc) => (err) ? console.log(err) : res.send(doc));
 	});
 });
 
