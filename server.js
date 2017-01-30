@@ -126,6 +126,6 @@ app.post('/articles/:aId/delete/:cId', function (req, res) {
 	res.redirect('/articles/' + articleId);
 });
 
-app.listen(3000, function () {
+app.listen(process.env.PORT || 3000, function () {
 	console.log('App running on port 3000');
 });
