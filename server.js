@@ -40,28 +40,28 @@ app.get('/', function (req, res) {
 
 //Scraping site news.ycombinator.com/
 app.get('/scraping', (req, res) => {
-	request.get('https://news.ycombinator.com/', (err, request, body) => {
+	var url = 'https://www.cinemablend.com/news.php/';
+	request.get(url, (err, request, body) => {
 		var $ = cheerio.load(body);
 
 		//For each title class with a href http or https
-		$('.title a[href^="http"], a[href^="https"]').each((index, element) => {
+		$('.story_item a').each((index, element) => {
 			var result = {};
 
-			//title and link data saved in the object "result"
-			result.title = $(element)[0].children[0].data
-			result.link = $(element)[0].attribs.href;
+			result.title = $(element)[0].attribs.title;
+			result.link = url + $(element)[0].attribs.href;
 
 			//creating new instance of Article
-			var entry = new Article(result);
+			var article = new Article(result);
 			//saving article to MongoDB
-			entry.save((err, doc) => {
+			article.save((err, doc) => {
 				//Messages for dev purposes
 				if (err) {
 					console.log('Already scraped');
 				} else {
 					console.log('New article scraped');
 				}
-			})
+			});
 		});
 	});
 	//Redirecting to /articles route
