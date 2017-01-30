@@ -4,7 +4,7 @@
 </div>
 
 {{#each articles}}
-	<div class="input-group">
+	<div class="input-group articles-list">
 		<a href="{{this.link}}" target="_blank" class="form-control">{{this.title}}</a>
 		<span class="input-group-btn">		
 			<form action="/unsaved/{{this.id}}" method="POST">
