@@ -15,7 +15,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(express.static('public'));
 
-mongoose.connect('mongodb://localhost/newsscraper');
+mongoose.connect('mongodb://heroku_wz6l96kq:ubnrroqm6j2ucpgvekid0lp7ej@ds117829.mlab.com:17829/heroku_wz6l96kq');
 var db = mongoose.connection;
 db.on('error', function (err) {
 	console.log('Mongoose Error: ', err);
