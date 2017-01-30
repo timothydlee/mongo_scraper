@@ -41,7 +41,7 @@ app.get('/', function (req, res) {
 //Scraping site news.ycombinator.com/
 app.get('/scraping', (req, res) => {
 	var url = 'https://www.cinemablend.com/news.php/';
-	var linkUrl = 'https://www.cinemablend.com/news';
+	var linkUrl = 'https://www.cinemablend.com';
 	request.get(url, (err, request, body) => {
 		var $ = cheerio.load(body);
 
