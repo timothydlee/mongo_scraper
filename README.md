@@ -13,17 +13,10 @@ A full stack application utilizing MongoDB as the backend, the Node environment,
 3. Comment out line 22. Save.
 
 4. After set up, enter the following command in the terminal/bash:
-
 mongod
 
-5. When connection is up and running, open a second bash/terminal window and navigate to the root directory. 
-
-Enter commands:
-
+5. When connection is up and running, open a second bash/terminal window and navigate to the root directory. Enter commands:
 npm i
 nodemon server.js
 
 6. The app should be running on localhost:3000.
-
-
-
