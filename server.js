@@ -41,6 +41,7 @@ app.get('/', function (req, res) {
 //Scraping site news.ycombinator.com/
 app.get('/scraping', (req, res) => {
 	var url = 'https://www.cinemablend.com/news.php/';
+	var linkUrl = 'https://www.cinemablend.com/news';
 	request.get(url, (err, request, body) => {
 		var $ = cheerio.load(body);
 
@@ -49,7 +50,8 @@ app.get('/scraping', (req, res) => {
 			var result = {};
 
 			result.title = $(element)[0].attribs.title;
-			result.link = url + $(element)[0].attribs.href;
+			result.link = linkUrl + $(element)[0].attribs.href;
+			console.log(result.link);
 
 			//creating new instance of Article
 			var article = new Article(result);
