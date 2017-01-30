@@ -126,6 +126,43 @@ app.post('/articles/:aId/delete/:cId', function (req, res) {
 	res.redirect('/articles/' + articleId);
 });
 
+// app.post('/articles/:aId/save', function (req, res) {
+// 	Article.update({ '_id': req.params.aId }, function (err, res) {
+// 		if (err) {
+// 			console.log(err);
+// 		} else {
+// 			console.log('Successfully saved article');
+// 		}
+// 	})
+// });
+
+app.get('/saved', (req, res) => {
+	//Finds articles where saved is true
+	Article.find({ 'saved' : true }, (err, doc) => {
+		if (err) {
+			console.log(err);
+		}  else {
+			res.render('articles-saved', {
+				articles: doc
+			});
+		}
+	})
+});
+
+//Setting route to update an article to saved = true if user clicks "save article"
+app.post('/saved/:id', (req, res) => {
+	Article.update({ '_id' : req.params.id }, { $set : { 'saved' : true }}, (err, res) => 
+		//Console.logs error if any, otherwise console.logs res
+		(err) ? console.log(err) : console.log(res));
+})
+
+//Unsaves article
+app.post('/unsaved/:id', (req, res) => {
+	Article.update( { '_id' : req.params.id }, { $set : { 'saved' : false }}, (err, res) => 
+		(err) ? console.log(err) : console.log(res))
+})
+
+//Listening to the port 3000 or the environment PORT
 app.listen(process.env.PORT || 3000, function () {
 	console.log('App running on port 3000');
 });
