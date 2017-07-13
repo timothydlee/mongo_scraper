@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "engines": {
     "node": "6.11.1"
-  }
+  },
   "description": "Scrapes the news from another source and allows for commenting on articles",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
